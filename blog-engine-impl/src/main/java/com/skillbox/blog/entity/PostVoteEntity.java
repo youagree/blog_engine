@@ -14,7 +14,7 @@ import java.time.LocalDate;
 
 @Data
 @Entity
-@Table(name = "post_votes")
+@Table(name = "post_vote")
 public class PostVoteEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,11 +22,11 @@ public class PostVoteEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private PostEntity postId;
+    private Post postId;
 
     @Column(nullable = false)
     private LocalDate time;

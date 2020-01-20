@@ -14,23 +14,23 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "post_comments")
-public class PostCommentEntity {
+@Table(name = "post_comment")
+public class PostComment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private PostCommentEntity parentId;
+    private PostComment parentId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User userId;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    private PostEntity postId;
+    private Post postId;
 
     @Column(nullable = false)
     private LocalDateTime time;

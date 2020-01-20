@@ -23,8 +23,8 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "posts")
-public class PostEntity {
+@Table(name = "post")
+public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
@@ -38,11 +38,11 @@ public class PostEntity {
 
     @ManyToOne
     @JoinColumn(name = "moderator_id")
-    private UserEntity moderatorId;
+    private User moderatorId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity userId;
+    private User userId;
 
     @Column(nullable = false)
     private LocalDateTime time;
@@ -62,5 +62,5 @@ public class PostEntity {
             joinColumns = {@JoinColumn(name = "post_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")}
     )
-    private Set<TagEntity> tags = new HashSet<>();
+    private Set<Tag> tags = new HashSet<>();
 }
