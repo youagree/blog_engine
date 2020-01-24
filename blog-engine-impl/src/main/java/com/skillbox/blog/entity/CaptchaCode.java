@@ -1,6 +1,7 @@
 package com.skillbox.blog.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Accessors(chain = true)
 @Table(name = "captcha_code")
 public class CaptchaCode {
     @Id
@@ -24,7 +26,7 @@ public class CaptchaCode {
     @Column(nullable = false)
     private String code;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String secretCode;
 }
 

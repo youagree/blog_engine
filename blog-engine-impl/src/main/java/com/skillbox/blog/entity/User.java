@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,6 +35,6 @@ public class User {
 
     private String code;
 
-    @Column(length = 65535, columnDefinition = "Text")
+    @Column(columnDefinition = "Text")
     private String photo;
 }
