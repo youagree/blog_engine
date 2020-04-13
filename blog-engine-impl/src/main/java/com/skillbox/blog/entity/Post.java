@@ -1,7 +1,10 @@
 package com.skillbox.blog.entity;
 
 import com.skillbox.blog.entity.enums.ModerationStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,49 +21,52 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Entity
+@Builder
 @Table(name = "post")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Post {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
 
-    @Column(nullable = false)
-    private byte isActive;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ModerationStatus moderationStatus;
+  @Column(nullable = false)
+  private byte isActive;
 
-    @ManyToOne
-    @JoinColumn(name = "moderator_id")
-    private User moderatorId;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private ModerationStatus moderationStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userId;
+  @ManyToOne
+  @JoinColumn(name = "moderator_id")
+  private User moderatorId;
 
-    @Column(nullable = false)
-    private LocalDateTime time;
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User userId;
 
-    @Column(nullable = false)
-    private String title;
+  @Column(columnDefinition = "TIMESTAMP", nullable = false)
+  private LocalDateTime time;
 
-    @Column(columnDefinition = "Text", nullable = false)
-    private String text;
+  @Column(nullable = false)
+  private String title;
 
-    @Column(nullable = false)
-    private int viewCount;
+  @Column(columnDefinition = "Text", nullable = false)
+  private String text;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "tag2post",
-            joinColumns = {@JoinColumn(name = "post_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id")}
-    )
-    private Set<Tag> tags = new HashSet<>();
+  @Column(nullable = false)
+  private int viewCount;
+
+  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "post2tag",
+      joinColumns = {@JoinColumn(name = "post_id")},
+      inverseJoinColumns = {@JoinColumn(name = "tag_id")}
+  )
+  private List<Tag> tagList;
 }

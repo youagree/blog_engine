@@ -16,17 +16,18 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Table(name = "captcha_code")
 public class CaptchaCode {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
 
-    @Column(nullable = false)
-    private LocalDateTime time;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    @Column(nullable = false)
-    private String code;
+  @Column(nullable = false)
+  private LocalDateTime time;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String secretCode;
+  @Column(nullable = false)
+  private String code;
+
+  @Column(nullable = false)
+  private String secretCode;
 }
 

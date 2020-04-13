@@ -16,26 +16,27 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "post_comment")
 public class PostComment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private PostComment parentId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userId;
+  @ManyToOne
+  @JoinColumn(name = "parent_id")
+  private PostComment parentId;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post postId;
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User userId;
 
-    @Column(nullable = false)
-    private LocalDateTime time;
+  @ManyToOne
+  @JoinColumn(name = "post_id")
+  private Post postId;
 
-    @Column
-    private String text;
+  @Column(nullable = false)
+  private LocalDateTime time;
+
+  @Column
+  private String text;
 }
 
