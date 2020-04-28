@@ -1,8 +1,8 @@
 package com.skillbox.blog.service;
 
 import com.skillbox.blog.config.Mail;
-import com.skillbox.blog.service.api.MailService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,13 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 
 @Service("mailServer")
-@AllArgsConstructor
 public class MailServerImpl implements MailService {
 
+  @Autowired
   private JavaMailSender mailSender;
+
+  @Value("${spring.mail.host}")
+  private String host;
 
   @Override
   public void sendMail(Mail mail) {
@@ -25,7 +28,7 @@ public class MailServerImpl implements MailService {
     try {
       MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
       mimeMessageHelper.setSubject(mail.getSubject());
-      mimeMessageHelper.setFrom(new InternetAddress(mail.getFrom(), "Blog mail robot"));
+      mimeMessageHelper.setFrom(new InternetAddress(mail.getFrom() + "@" + host, "Blog mail robot"));
       mimeMessageHelper.setTo(mail.getTo());
       mimeMessageHelper.setText(mail.getContent());
       mailSender.send(mimeMessageHelper.getMimeMessage());

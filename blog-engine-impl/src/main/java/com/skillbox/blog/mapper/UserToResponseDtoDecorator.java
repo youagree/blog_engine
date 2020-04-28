@@ -1,8 +1,7 @@
-package com.skillbox.blog.mapper.decorator;
+package com.skillbox.blog.mapper;
 
 import com.skillbox.blog.dto.response.ResponseUserDto;
 import com.skillbox.blog.entity.User;
-import com.skillbox.blog.mapper.UserToResponseLoginDto;
 import com.skillbox.blog.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

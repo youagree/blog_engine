@@ -1,4 +1,4 @@
-package com.skillbox.blog.service.api;
+package com.skillbox.blog.service;
 
 
 import com.skillbox.blog.config.Mail;

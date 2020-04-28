@@ -4,6 +4,7 @@ import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.dto.response.errors.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.FieldError;
@@ -48,7 +49,7 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler(InternalAuthenticationServiceException.class)
-  public ResponseResults handleInternalAuthenticationException(
+  public ResponseResults<?> handleInternalAuthenticationException(
       InternalAuthenticationServiceException e) {
     log.error(e.getMessage());
     return new ResponseResults<>()
@@ -57,7 +58,7 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-  public ResponseResults handleCheckAuthenticationException(
+  public ResponseResults<?> handleCheckAuthenticationException(
       AuthenticationCredentialsNotFoundException e) {
     log.error(e.getMessage());
     return new ResponseResults<>()
@@ -82,7 +83,7 @@ public class GlobalExceptionHandler {
         .build();
   }
 
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(StatusException.class)
   public ErrorResponse handleStatusException(StatusException ex) {
     log.error("Settings not found in the database: {}", ex.getMessage());
@@ -111,7 +112,7 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(InvalidCaptchaException.class)
-  public ResponseResults handleCaptchaExeception(InvalidCaptchaException ex) {
+  public ResponseResults<?> handleCaptchaExeception(InvalidCaptchaException ex) {
     log.error("invalid secret code: {}", ex.getMessage());
     return new ResponseResults<>()
         .setErrors(Map.of("captcha", ex.getMessage()))
@@ -120,10 +121,16 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(InvalidAttributeException.class)
-  public ResponseResults handleNameNotValidException(InvalidAttributeException ex) {
-    log.error(ex.getMessage());
+  public ResponseResults<?> handleInvalidAttributeException(InvalidAttributeException ex) {
+    log.error("{}: {}", ex.getMessage(), ex.getErrors());
     return new ResponseResults<>()
         .setResult(false)
         .setErrors(ex.getErrors());
+  }
+
+  @ExceptionHandler(StorageException.class)
+  public ResponseEntity<?> handleStorageException(StorageException ex) {
+    log.error(ex.getMessage());
+    return ResponseEntity.status(500).build();
   }
 }

@@ -2,7 +2,7 @@ package com.skillbox.blog.controller;
 
 import com.skillbox.blog.dto.response.ResponseStatisticsDto;
 import com.skillbox.blog.service.StatisticsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,9 +12,9 @@ import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequestMapping("api/")
+@AllArgsConstructor
 public class StatisticsController {
 
-  @Autowired
   StatisticsService statisticsService;
 
   @RequestMapping("statistics/my")

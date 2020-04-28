@@ -23,13 +23,6 @@ spring:
   profiles:
     active: default
 
-#  security:
-#    basic:
-#      enabled: false
-#  management:
-#    security:
-#      enabled: false
-
   mail:
     host: host
     port: 587
@@ -41,7 +34,6 @@ spring:
           auth: true
           starttls:
             enable: true
-
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL94Dialect
@@ -76,10 +68,10 @@ spring:
       minimumIdle: 2
       maximumPoolSize: 50
   jackson:
-    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat #форматирование дат в ISO формате (требования фронта, иначе не работает Java 8 Date Api)
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
     serialization:
-      FAIL_ON_EMPTY_BEANS: false #отсутствие свойств не приводит к ошибке
-    default-property-inclusion: NON_NULL #не сериализовывать null поля
+      FAIL_ON_EMPTY_BEANS: false
+    default-property-inclusion: NON_NULL
 
   liquibase:
     enabled: false

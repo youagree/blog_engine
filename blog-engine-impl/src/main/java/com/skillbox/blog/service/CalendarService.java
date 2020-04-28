@@ -8,8 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.TreeMap;
 
 @Service
@@ -17,17 +16,15 @@ import java.util.TreeMap;
 @AllArgsConstructor
 public class CalendarService {
 
-  private PostRepository repository;
+  PostRepository postRepository;
 
   public ResponseCalendarDto getPublicationsCount(int year) {
-    if (String.valueOf(year).length() > 4 || year == 0) {
+    if (String.valueOf(year).length() != 4 || year == 0) {
       year = LocalDate.now().getYear();
     }
 
-    Object[] years = repository.findYearsWherePublicationsPresent().toArray();
-    Arrays.sort(years, Collections.reverseOrder());
-
-    ArrayList<String> postDateList = repository.findCountPublicationsOnDateByYear(year);
+    List<Integer> years = postRepository.findYearsWherePublicationsPresent();
+    ArrayList<String> postDateList = postRepository.findCountPublicationsOnDateByYear(year);
 
     TreeMap<String, Integer> posts = new TreeMap<>();
     for (String postDate : postDateList) {
@@ -38,6 +35,9 @@ public class CalendarService {
       }
     }
 
-    return new ResponseCalendarDto(years, posts);
+    return ResponseCalendarDto.builder()
+        .years(years)
+        .posts(posts)
+        .build();
   }
 }

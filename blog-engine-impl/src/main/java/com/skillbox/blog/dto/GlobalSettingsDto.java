@@ -1,4 +1,4 @@
-package com.skillbox.blog.dto.response.settings;
+package com.skillbox.blog.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

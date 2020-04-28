@@ -1,7 +1,7 @@
 package com.skillbox.blog.mapper;
 
 import com.skillbox.blog.config.GlobalSettingsConfig;
-import com.skillbox.blog.dto.response.settings.GlobalSettingsDto;
+import com.skillbox.blog.dto.GlobalSettingsDto;
 import com.skillbox.blog.entity.GlobalSetting;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;

@@ -1,6 +1,6 @@
 package com.skillbox.blog.service;
 
-import com.skillbox.blog.dto.response.settings.GlobalSettingsDto;
+import com.skillbox.blog.dto.GlobalSettingsDto;
 import com.skillbox.blog.entity.GlobalSetting;
 import com.skillbox.blog.exception.StatusException;
 import com.skillbox.blog.mapper.GlobalSettingsConfigToDto;

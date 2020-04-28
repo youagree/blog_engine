@@ -30,7 +30,7 @@ public class ProfileService {
   private ImageService imageService;
   private PasswordEncoder passwordEncoder;
 
-  public ResponseResults editProfile(RequestEditProfileDto request, MultipartFile file)
+  public ResponseResults<?> editProfile(RequestEditProfileDto request, MultipartFile file)
       throws IllegalClassFormatException {
     Map<String, String> errors = new LinkedHashMap<>();
     User user = userService.getCurrentUser();
@@ -100,7 +100,7 @@ public class ProfileService {
       }
       File oldPhoto = new File(user.getPhoto());
       oldPhoto.delete();
-      user.setPhoto("/" + imageService.uploadImage(file));
+      user.setPhoto(imageService.uploadImage(file));
     }
   }
 }

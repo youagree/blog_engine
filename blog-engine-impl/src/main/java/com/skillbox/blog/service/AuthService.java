@@ -17,16 +17,16 @@ import com.skillbox.blog.mapper.UserDtoToUser;
 import com.skillbox.blog.mapper.UserToResponseLoginDto;
 import com.skillbox.blog.repository.CaptchaRepository;
 import com.skillbox.blog.repository.UserRepository;
-import com.skillbox.blog.service.api.MailService;
 import com.skillbox.blog.utils.RandomStringGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.patchca.color.SingleColorFactory;
 import org.patchca.filter.predefined.CurvesRippleFilterFactory;
+import org.patchca.font.RandomFontFactory;
 import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.utils.encoder.EncoderHelper;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Map;
@@ -46,6 +47,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class AuthService {
 
+  private static final String DEFAULT_USERPIC = "/default-1.png";
+  private static final String DATA_PREFIX = "data:image/png;base64,";
+
+  private static final String PWD_RESTORE_MAIL = "Hello, %1$s!%n"
+      + "Please follow the next link to restore pwd:%n"
+      + "%2$s%n%n"
+      + "/r Awesome blog team";
 
   private UserRepository userRepository;
   private CaptchaRepository captchaRepository;
@@ -55,11 +63,13 @@ public class AuthService {
   private MailService mailServer;
   private PasswordEncoder passwordEncoder;
 
-  public ResponseResults registerNewUser(RequestUserDto dto) {
-    String captchaCodeByCode = captchaRepository.findCaptchaCodeByCode(dto.getCaptcha());
+  public ResponseResults<?> registerNewUser(RequestUserDto dto) {
+    String captchaCodeBySecret = captchaRepository.findCaptchaCodeBySecret(dto.getCaptchaSecret());
 
-    if (captchaCodeByCode == null) {
-      throw new InvalidAttributeException(Map.of("captcha","Wrong captcha code entered"));
+    if (captchaCodeBySecret == null) {
+      throw new InvalidAttributeException(Map.of("captcha", "Wrong captcha code entered"));
+    } else {
+      validateCaptcha(dto.getCaptcha(), captchaCodeBySecret);
     }
     if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
       throw new InvalidAttributeException(Map.of("email", "Email address already registered"));
@@ -69,51 +79,57 @@ public class AuthService {
     }
     dto.setPassword(passwordEncoder.encode(dto.getPassword()));
     User user = userDtoToUser.map(dto);
-    // due to frontend doesn't send name
-    user.setName(user.getEmail());
-    // due to frontend cannot handle null
-    user.setPhoto("");
+
+    if (dto.getName() != null && !dto.getName().isEmpty()) {
+      user.setName(dto.getName());
+    } else {
+      user.setName(dto.getEmail());
+    }
+
+    user.setPhoto(DEFAULT_USERPIC);
     userRepository.save(user);
     return new ResponseResults<>()
         .setResult(true);
   }
 
-  public ResponseCaptchaDto genAndSaveCaptcha() throws IOException {
+  public ResponseCaptchaDto genAndSaveCaptcha() {
     ConfigurableCaptchaService cs = new ConfigurableCaptchaService();
+    cs.setWidth(100);
+    cs.setFontFactory(new RandomFontFactory(30, new String[]{"Verdana"}));
     cs.setColorFactory(new SingleColorFactory(new Color(25, 60, 170)));
     cs.setFilterFactory(new CurvesRippleFilterFactory(cs.getColorFactory()));
 
     CaptchaCode captchaCode;
     try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-      String decodeCode = EncoderHelper.getChallangeAndWriteImage(cs, "png", byteArrayOutputStream);
-      String encodeCode = "data:image/png;base64,";
-      encodeCode += Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+      String plainCode = EncoderHelper.getChallangeAndWriteImage(cs, "png", byteArrayOutputStream);
+      String encodeCode =
+          DATA_PREFIX + Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
       captchaCode =
           new CaptchaCode()
-              .setCode(decodeCode)
-              .setSecretCode(encodeCode)
+              .setCode(plainCode)
+              .setSecretCode(RandomStringGenerator.randomString(10))
               .setTime(LocalDateTime.now());
+      captchaRepository.save(captchaCode);
+      return captchaToCaptchaDto.map(captchaCode).setImage(encodeCode);
     } catch (IOException e) {
       throw new InvalidCaptchaException("Cannot generate captcha");
     }
-    captchaRepository.save(captchaCode);
-    return captchaToCaptchaDto.map(captchaCode);
   }
 
   @Transactional(readOnly = true)
-  public ResponseResults checkAuth(HttpServletRequest request) {
-    if (SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")) {
+  public ResponseResults<?> checkAuth(HttpServletRequest request, Principal principal) {
+    if (principal == null) {
       throw new AuthenticationCredentialsNotFoundException(
           "Session does not exist: " + request.getHeader("Cookie"));
     }
     return new ResponseLoginDto<>()
         .setUser(
-            userToResponseLoginDto.map(
-                (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()))
+            userToResponseLoginDto
+                .map((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()))
         .setResult(true);
   }
 
-  public ResponseResults restorePassword(RequestPwdRestoreDto dto, String host) {
+  public ResponseResults<?> restorePassword(RequestPwdRestoreDto dto, String host) {
     User user = userRepository.findByEmail(dto.getEmail())
         .orElseThrow(() -> new AuthenticationCredentialsNotFoundException(
             "There is no such user " + dto.getEmail()));
@@ -121,31 +137,36 @@ public class AuthService {
     userRepository.save(user);
     mailServer.sendMail(
         new Mail(
-            "noreply@lifo.ml",
+            "noreply",
             dto.getEmail(),
             "Password restoration",
             String.format(
-                "Hello, %1$s!\n"
-                    + "Please follow the next link to restore pwd:\n"
-                    + "%2$s\n\n"
-                    + "/r Awesome blog team",
+                PWD_RESTORE_MAIL,
                 user.getName(),
-                "http://" + host + "/login/change-password/?hash" + user.getCode()
+                "http://" + host + "/login/change-password/" + user.getCode()
             )
         )
     );
     return new ResponsePasswordDto<>().setResult(true);
   }
 
-  public ResponseResults changePassword(RequestPasswordDto dto) {
+  public ResponseResults<?> changePassword(RequestPasswordDto dto) {
     User user = userRepository.findByCode(dto.getCode())
         .orElseThrow(EntityNotFoundException::new);
-    String captchaCodeByCode = captchaRepository.findCaptchaCodeByCode(dto.getCaptcha());
-    if (captchaCodeByCode != null) {
+    String captchaCodeBySecret = captchaRepository.findCaptchaCodeBySecret(dto.getCaptchaSecret());
+    if (captchaCodeBySecret != null) {
+      validateCaptcha(dto.getCaptcha(), captchaCodeBySecret);
       user.setPassword(passwordEncoder.encode(dto.getPassword()));
       userRepository.save(user);
       return new ResponsePasswordDto<>().setResult(true);
     }
     throw new InvalidCaptchaException("captcha argument exception");
+  }
+
+
+  private void validateCaptcha(String entered, String actual) {
+    if (!entered.equals(actual)) {
+      throw new InvalidCaptchaException("Wrong captcha");
+    }
   }
 }
