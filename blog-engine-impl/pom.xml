@@ -24,7 +24,10 @@
 		<springfox-swagger2>2.9.2</springfox-swagger2>
 		<liquibase-core>3.8.5</liquibase-core>
 		<blade-patchca>1.1.2</blade-patchca>
-		<postgres.pass>postgres</postgres.pass>
+
+		<!--database-->
+		<postgres.log>be_user</postgres.log>
+		<postgres.pass>be_user</postgres.pass>
 	</properties>
 
 	<dependencies>
@@ -176,7 +179,7 @@
 					<changeLogFile>src/main/resources/database_changelog.xml</changeLogFile>
 					<driver>org.postgresql.Driver</driver>
 					<url>jdbc:postgresql://localhost:5432/sklbx?currentSchema=be</url>
-					<username>postgres</username>
+					<username>${postgres.log}</username>
 					<password>${postgres.pass}</password>
 				</configuration>
 				<executions>

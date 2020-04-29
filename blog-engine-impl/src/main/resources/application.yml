@@ -59,8 +59,8 @@ spring:
   datasource:
     driverClassName: com.p6spy.engine.spy.P6SpyDriver
     url: jdbc:p6spy:postgresql://localhost:5432/sklbx?currentSchema=be
-    username: postgres
-    password: 1234
+    username: be_user
+    password: be_user
     hikari:
       connectionTimeout: 30000
       idleTimeout: 600000
@@ -77,5 +77,5 @@ spring:
     enabled: false
     change-log: classpath:database_changelog.xml
     url: jdbc:postgresql://localhost:5432/sklbx?currentSchema=be
-    user: postgres
-    password: 1234
+    user: be_user
+    password: be_user
