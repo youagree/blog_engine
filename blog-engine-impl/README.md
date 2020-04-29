@@ -33,5 +33,4 @@ $ git clone ${repo.url}
 1. run init.sql in you psql console db.changelog/init/init.sql
 2. mvn -DskipTests=true clean package
 3. mvn -DskipTests=true liquibase:update -f pom.xml
-4. before running change password in application.yml to your password for correct connection to db
-5. run application
+4. run application
