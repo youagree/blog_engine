@@ -31,7 +31,7 @@ $ git clone ${repo.url}
 
 ## Setup for users, who already have postgres on local machine
 1. run init.sql in you psql console db.changelog/init/init.sql
-2. mvn package -f pom.xml
+2. -DskipTests=true clean package
 3. mvn liquibase:update -f pom.xml
 4. before running change password in application.yml to your password for correct connection to db
 5. run application
