@@ -2,6 +2,7 @@ package com.skillbox.blog.config;
 
 import com.skillbox.blog.mapper.GlobalSettingsConfigToDto;
 import com.skillbox.blog.repository.GlobalSettingRepository;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @ConfigurationProperties(prefix = "global-settings")
 public class GlobalSettingsConfig implements CommandLineRunner {
 
+  @Getter
   @Setter
   List<GlobalSettingConfig> globalSettings;
 
@@ -34,8 +36,7 @@ public class GlobalSettingsConfig implements CommandLineRunner {
     );
   }
 
-  @Getter
-  @Setter
+  @Data
   public static class GlobalSettingConfig {
 
     private String code;
