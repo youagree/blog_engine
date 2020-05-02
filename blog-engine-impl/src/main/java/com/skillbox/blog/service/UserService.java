@@ -11,9 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @AllArgsConstructor
@@ -38,16 +38,24 @@ public class UserService implements UserDetailsService {
   public User getCurrentUser() {
     Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     if (user instanceof User) {
-      return (User) user;
+      return userRepository.findById(((User) user).getId());
     } else {
       throw new AuthenticationCredentialsNotFoundException("Session does not exist");
     }
 
   }
 
-  public User getModerator() {
-    return userRepository.findByIsModerator((byte) 1)
-        .orElseThrow(() -> new EntityNotFoundException("Moderator is not defined."));
+  public User getModerator(boolean isMultiUserMode) {
+    User cu = getCurrentUser();
+    
+    if (isMultiUserMode) {
+      List<User> moderators = userRepository.findByIsModerator((byte) 1);
+      moderators.remove(cu);
+      return moderators.get(new Random().nextInt(moderators.size()));
+    }
+    else {
+      return cu;
+    }
   }
 
   public boolean isModerator() {

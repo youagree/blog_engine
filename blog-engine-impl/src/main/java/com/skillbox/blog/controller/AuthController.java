@@ -49,7 +49,7 @@ public class AuthController {
   @PostMapping("/restore")
   @ResponseStatus(HttpStatus.OK)
   public ResponseResults<?> restorePassword(@Valid @RequestBody RequestPwdRestoreDto dto,
-      @RequestHeader String host) {
+                                            @RequestHeader String host) {
     return authService.restorePassword(dto, host);
   }
 

@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -138,7 +139,7 @@ public class PostService {
         .likeCount(postVoteRepository.findCountOfLikesById(postId))
         .dislikeCount(postVoteRepository.findCountOfDislikesById(postId))
         .commentCount(comments.size())
-        .viewCount(postRepository.findViewCountByPostId(postId))
+        .viewCount(post.getViewCount())
         .comments(comments)
         .tags(tags)
         .build();
@@ -173,13 +174,14 @@ public class PostService {
   }
 
   @Transactional(readOnly = true)
-  public ResponseAllPostsDto getModerationList(String status) {
+  public ResponseAllPostsDto getModerationList(int offset, int limit, String status) {
+    Pageable pageable = PageRequest.of(offset / limit, limit);
     int moderatorId = userService.getCurrentUser().getId();
     int count = postRepository
         .findCountPostsForModerationByStatus(moderatorId, status.toUpperCase());
 
     List<Post> postsForModeration = postRepository
-        .findPostsForModerationByStatus(moderatorId, status.toUpperCase());
+        .findPostsForModerationByStatus(moderatorId, status.toUpperCase(), pageable);
 
     List<PartInfoOfPosts> posts = new ArrayList<>();
 
@@ -250,13 +252,14 @@ public class PostService {
 
   public ResponseResults<Boolean> createPost(RequestPost post) {
     byte currentUserStatus = userService.getCurrentUser().getIsModerator();
-    if (globalSettingRepository.findMultiuserModeValue().equals("NO") && currentUserStatus == 0) {
+    boolean isMultiuserMode = globalSettingRepository.findMultiuserModeValue().equals("YES");
+    if (!isMultiuserMode && currentUserStatus == 0) {
       return new ResponseResults<Boolean>().setResult(false);
     }
 
     Post postToSave = requestMapper.mapNew(post);
     postToSave.setUserId(userService.getCurrentUser());
-    postToSave.setModeratorId(userService.getModerator());
+    postToSave.setModeratorId(userService.getModerator(isMultiuserMode));
     postToSave.setTagList(updateTags(post.getTags()));
 
     if (globalSettingRepository.findPostPremoderationValue().equals("NO") || currentUserStatus == 1) {
@@ -405,14 +408,15 @@ public class PostService {
     DateTimeFormatter formattingToday = DateTimeFormatter.ofPattern("Сегодня, HH:mm");
     DateTimeFormatter formattingYesterday = DateTimeFormatter.ofPattern("Вчера, HH:mm");
 
-    LocalDateTime today = LocalDateTime.now();
-    final long oneDay = 1440;
-    final long twoDays = 2880;
+    LocalDateTime today = LocalDate.now().atStartOfDay();
 
-    if (Duration.between(date, today).toMinutes() <= oneDay) {
+    long diff = Duration.between(today, date).toSeconds();
+    final long oneDay = 86_400;
+
+    if (diff >= 0 && diff < oneDay) {
       return date.format(formattingToday);
 
-    } else if (Duration.between(date, today).toMinutes() <= twoDays) {
+    } else if (diff >= -oneDay && diff < 0) {
       return date.format(formattingYesterday);
 
     } else {
@@ -427,12 +431,10 @@ public class PostService {
       int userId = post.getUserId().getId();
       String userName = userRepository.findNameById(userId);
       int postId = post.getId();
-      String announce;
+      String announce = post.getText().replaceAll("(<.*?>)|(&.*?;)", "");
 
-      if (post.getText().contains(".")) {
-        announce = post.getText().substring(0, post.getText().indexOf(".") + 1);
-      } else {
-        announce = post.getText();
+      if (announce.contains(".")) {
+        announce = announce.substring(0, announce.indexOf(".") + 1);
       }
 
       PartInfoOfUser infoOfUser = PartInfoOfUser.builder()

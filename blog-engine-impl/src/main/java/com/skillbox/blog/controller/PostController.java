@@ -31,7 +31,7 @@ public class PostController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseAllPostsDto getPosts(@RequestParam int offset,
                                       @RequestParam int limit,
-                                      @RequestParam String mode) {
+                                      @RequestParam(value = "mode") String mode) {
     return postService.getPosts(offset, limit, mode);
   }
 
@@ -54,7 +54,7 @@ public class PostController {
   @ResponseStatus(HttpStatus.OK)
   public ResponseAllPostsDto getPostsByDate(@RequestParam int offset,
                                             @RequestParam int limit,
-                                            @RequestParam String date) {
+                                            @RequestParam(value = "date") String date) {
     return postService.getPostsByDate(offset, limit, date);
   }
 
@@ -68,8 +68,10 @@ public class PostController {
 
   @GetMapping("/post/moderation")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseAllPostsDto getModerationList(@RequestParam String status) {
-    return postService.getModerationList(status);
+  public ResponseAllPostsDto getModerationList(@RequestParam int offset,
+                                               @RequestParam int limit,
+                                               @RequestParam(value = "status") String status) {
+    return postService.getModerationList(offset, limit, status);
   }
 
   @GetMapping("/post/my")

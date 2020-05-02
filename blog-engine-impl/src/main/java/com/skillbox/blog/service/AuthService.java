@@ -1,6 +1,8 @@
 package com.skillbox.blog.service;
 
 import com.skillbox.blog.config.Mail;
+import com.skillbox.blog.config.security.SecurityConstants;
+import com.skillbox.blog.config.security.jwt.JwtProvider;
 import com.skillbox.blog.dto.request.RequestPasswordDto;
 import com.skillbox.blog.dto.request.RequestPwdRestoreDto;
 import com.skillbox.blog.dto.request.RequestUserDto;
@@ -26,7 +28,6 @@ import org.patchca.font.RandomFontFactory;
 import org.patchca.service.ConfigurableCaptchaService;
 import org.patchca.utils.encoder.EncoderHelper;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,12 @@ public class AuthService {
       + "%2$s%n%n"
       + "/r Awesome blog team";
 
+  private static final String LINK_EXPIRED_MSG =
+      "Ссылка для восстановления пароля устарела.\n" +
+          "<a href=/auth/restore>Запросить ссылку снова</a>";
+
   private UserRepository userRepository;
+  private UserService userService;
   private CaptchaRepository captchaRepository;
   private CaptchaToCaptchaDto captchaToCaptchaDto;
   private UserDtoToUser userDtoToUser;
@@ -123,9 +129,7 @@ public class AuthService {
           "Session does not exist: " + request.getHeader("Cookie"));
     }
     return new ResponseLoginDto<>()
-        .setUser(
-            userToResponseLoginDto
-                .map((User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal()))
+        .setUser(userToResponseLoginDto.map(userService.getCurrentUser()))
         .setResult(true);
   }
 
@@ -133,7 +137,7 @@ public class AuthService {
     User user = userRepository.findByEmail(dto.getEmail())
         .orElseThrow(() -> new AuthenticationCredentialsNotFoundException(
             "There is no such user " + dto.getEmail()));
-    user.setCode(RandomStringGenerator.randomString(45).toLowerCase());
+    user.setCode(JwtProvider.createToken() + SecurityConstants.SUFFIX);
     userRepository.save(user);
     mailServer.sendMail(
         new Mail(
@@ -151,6 +155,9 @@ public class AuthService {
   }
 
   public ResponseResults<?> changePassword(RequestPasswordDto dto) {
+    if (!JwtProvider.validateToken(dto.getCode())) {
+      throw new InvalidAttributeException(Map.of("code", LINK_EXPIRED_MSG));
+    }
     User user = userRepository.findByCode(dto.getCode())
         .orElseThrow(EntityNotFoundException::new);
     String captchaCodeBySecret = captchaRepository.findCaptchaCodeBySecret(dto.getCaptchaSecret());

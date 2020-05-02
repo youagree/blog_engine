@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface GlobalSettingRepository extends JpaRepository<GlobalSetting, Integer> {
 
-  @Query(nativeQuery = true, value = "SELECT value FROM be.global_settings WHERE "
-      + "code = POST_PREMODERATION")
+  @Query(nativeQuery = true, value = "SELECT value FROM global_setting WHERE "
+      + "code = 'POST_PREMODERATION'")
   String findPostPremoderationValue();
 
-  @Query(nativeQuery = true, value = "SELECT value FROM be.global_settings WHERE "
-      + "code = MULTIUSER_MODE")
+  @Query(nativeQuery = true, value = "SELECT value FROM global_setting WHERE "
+      + "code = 'MULTIUSER_MODE'")
   String findMultiuserModeValue();
 }

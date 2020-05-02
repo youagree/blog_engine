@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
         .build();
   }
 
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(StatusException.class)
   public ErrorResponse handleStatusException(StatusException ex) {
     log.error("Settings not found in the database: {}", ex.getMessage());
@@ -112,8 +112,8 @@ public class GlobalExceptionHandler {
 
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(InvalidCaptchaException.class)
-  public ResponseResults<?> handleCaptchaExeception(InvalidCaptchaException ex) {
-    log.error("invalid secret code: {}", ex.getMessage());
+  public ResponseResults<?> handleCaptchaException(InvalidCaptchaException ex) {
+    log.error("invalid captcha: {}", ex.getMessage());
     return new ResponseResults<>()
         .setErrors(Map.of("captcha", ex.getMessage()))
         .setResult(false);

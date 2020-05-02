@@ -24,6 +24,7 @@
 		<springfox-swagger2>2.9.2</springfox-swagger2>
 		<liquibase-core>3.8.5</liquibase-core>
 		<blade-patchca>1.1.2</blade-patchca>
+		<java-jwt.version>3.9.0</java-jwt.version>
 
 		<!--database-->
 		<postgres.log>be_user</postgres.log>
@@ -139,6 +140,17 @@
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>${java-jwt.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 

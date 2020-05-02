@@ -25,6 +25,7 @@ public class StatisticsService {
 
   public ResponseStatisticsDto getStatisticsForCurrentUser() {
     int userId = userService.getCurrentUser().getId();
+
     return ResponseStatisticsDto.builder()
         .postsCount(postRepository.findCountPostsForCurrentUser(userId))
         .likesCount(postVoteRepository.findCountOfLikesForCurrentUser(userId))
@@ -34,21 +35,26 @@ public class StatisticsService {
         .build();
   }
 
-  public ResponseStatisticsDto getStatisticForAll() throws AccessDeniedException {
+  public ResponseStatisticsDto getStatisticForAll() {
     List<GlobalSetting> settings = repository.findAll();
     if (
         settings.stream()
             .anyMatch(s -> s.getCode().equals("STATISTICS_IS_PUBLIC") && s.getValue().equals("YES"))
     ) {
       return ResponseStatisticsDto.builder()
-          .postsCount(postRepository.findCountOfSuitablePosts())
+          .postsCount(postRepository.findCountAllPosts())
           .likesCount(postVoteRepository.findCountOfAllLikes())
           .dislikesCount(postVoteRepository.findCountOfAllDislikes())
           .viewsCount(postRepository.findCountAllViews())
           .firstPublication(postService.dateMapping(postRepository.findFirstPublication()))
           .build();
     } else {
-      throw new AccessDeniedException("Statistics hidden by moderator!");
+      try {
+        throw new AccessDeniedException("Statistics hidden by moderator!");
+      } catch (AccessDeniedException e) {
+        e.printStackTrace();
+      }
     }
+    return null;
   }
 }

@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @ConfigurationProperties(prefix = "global-settings")
 public class GlobalSettingsConfig implements CommandLineRunner {
 
-  @Getter
   @Setter
+  @Getter
   List<GlobalSettingConfig> globalSettings;
 
   @Autowired

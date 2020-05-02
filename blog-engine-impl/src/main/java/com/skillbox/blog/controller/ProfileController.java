@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.lang.instrument.IllegalClassFormatException;
 
 @RestController
-@RequestMapping(value = "api/profile")
+@RequestMapping("api/profile")
 @AllArgsConstructor
 public class ProfileController {
 
