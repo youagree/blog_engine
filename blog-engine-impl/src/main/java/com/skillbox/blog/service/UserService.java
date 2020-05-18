@@ -13,13 +13,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Service
 @AllArgsConstructor
 public class UserService implements UserDetailsService {
 
-  UserRepository userRepository;
+  private UserRepository userRepository;
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -28,9 +27,9 @@ public class UserService implements UserDetailsService {
         .orElseThrow(() -> new UsernameNotFoundException("No user with such email: " + email));
     List<Role> authorities = new ArrayList<>();
     if (user.getIsModerator() == 1) {
-      authorities.add(Role.MODERATOR);
+      authorities.add(Role.ROLE_MODERATOR);
     }
-    authorities.add(Role.USER);
+    authorities.add(Role.ROLE_USER);
     user.setAuthorities(authorities);
     return user;
   }
@@ -45,21 +44,8 @@ public class UserService implements UserDetailsService {
 
   }
 
-  public User getModerator(boolean isMultiUserMode) {
-    User cu = getCurrentUser();
-    
-    if (isMultiUserMode) {
-      List<User> moderators = userRepository.findByIsModerator((byte) 1);
-      moderators.remove(cu);
-      return moderators.get(new Random().nextInt(moderators.size()));
-    }
-    else {
-      return cu;
-    }
-  }
-
   public boolean isModerator() {
     return SecurityContextHolder.getContext()
-        .getAuthentication().getAuthorities().contains(Role.MODERATOR);
+        .getAuthentication().getAuthorities().contains(Role.ROLE_MODERATOR);
   }
 }

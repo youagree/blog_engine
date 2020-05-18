@@ -16,7 +16,7 @@ import java.util.TreeMap;
 @AllArgsConstructor
 public class CalendarService {
 
-  PostRepository postRepository;
+  private PostRepository postRepository;
 
   public ResponseCalendarDto getPublicationsCount(int year) {
     if (String.valueOf(year).length() != 4 || year == 0) {
@@ -29,7 +29,7 @@ public class CalendarService {
     TreeMap<String, Integer> posts = new TreeMap<>();
     for (String postDate : postDateList) {
       if (posts.containsKey(postDate)) {
-        posts.put(postDate, posts.get(postDate) + 1);
+        posts.merge(postDate, 1, Integer::sum);
       } else {
         posts.put(postDate, 1);
       }

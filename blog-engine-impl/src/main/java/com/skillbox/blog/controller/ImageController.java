@@ -1,5 +1,6 @@
 package com.skillbox.blog.controller;
 
+import com.skillbox.blog.config.StorageConfig;
 import com.skillbox.blog.service.ImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,12 +19,13 @@ import java.lang.instrument.IllegalClassFormatException;
 public class ImageController {
 
   ImageService imageService;
+  StorageConfig storageConfig;
 
   @PostMapping(value = "/image", consumes = "multipart/form-data")
   @ResponseStatus(HttpStatus.OK)
   public String uploadImage(
       @RequestParam(value = "image") MultipartFile uploadFile)
       throws IllegalClassFormatException {
-    return imageService.uploadImage(uploadFile);
+    return imageService.uploadImage(uploadFile, storageConfig.getLocation().get("UPLOAD"));
   }
 }

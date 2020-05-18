@@ -30,7 +30,7 @@ public class AuthController {
 
   @PostMapping("/register")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults<?> register(@Valid @RequestBody RequestUserDto user) {
+  public ResponseResults register(@Valid @RequestBody RequestUserDto user) {
     return authService.registerNewUser(user);
   }
 
@@ -42,20 +42,20 @@ public class AuthController {
 
   @GetMapping("/check")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults<?> check(HttpServletRequest request, Principal principal) {
+  public ResponseResults check(HttpServletRequest request, Principal principal) {
     return authService.checkAuth(request, principal);
   }
 
   @PostMapping("/restore")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults<?> restorePassword(@Valid @RequestBody RequestPwdRestoreDto dto,
-                                            @RequestHeader String host) {
+  public ResponseResults restorePassword(@Valid @RequestBody RequestPwdRestoreDto dto,
+                                         @RequestHeader String host) {
     return authService.restorePassword(dto, host);
   }
 
   @PostMapping("/password")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults<?> changePassword(@Valid @RequestBody RequestPasswordDto dto) {
+  public ResponseResults changePassword(@Valid @RequestBody RequestPasswordDto dto) {
     return authService.changePassword(dto);
   }
 

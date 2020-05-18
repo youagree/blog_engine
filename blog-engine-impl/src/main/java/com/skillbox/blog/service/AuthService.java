@@ -8,7 +8,6 @@ import com.skillbox.blog.dto.request.RequestPwdRestoreDto;
 import com.skillbox.blog.dto.request.RequestUserDto;
 import com.skillbox.blog.dto.response.ResponseCaptchaDto;
 import com.skillbox.blog.dto.response.ResponseLoginDto;
-import com.skillbox.blog.dto.response.ResponsePasswordDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.entity.CaptchaCode;
 import com.skillbox.blog.entity.User;
@@ -69,7 +68,7 @@ public class AuthService {
   private MailService mailServer;
   private PasswordEncoder passwordEncoder;
 
-  public ResponseResults<?> registerNewUser(RequestUserDto dto) {
+  public ResponseResults registerNewUser(RequestUserDto dto) {
     String captchaCodeBySecret = captchaRepository.findCaptchaCodeBySecret(dto.getCaptchaSecret());
 
     if (captchaCodeBySecret == null) {
@@ -79,9 +78,6 @@ public class AuthService {
     }
     if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
       throw new InvalidAttributeException(Map.of("email", "Email address already registered"));
-    }
-    if (dto.getPassword().length() < 8) {
-      throw new InvalidAttributeException(Map.of("password", "Pwd is shorter than 8 symbols"));
     }
     dto.setPassword(passwordEncoder.encode(dto.getPassword()));
     User user = userDtoToUser.map(dto);
@@ -94,7 +90,7 @@ public class AuthService {
 
     user.setPhoto(DEFAULT_USERPIC);
     userRepository.save(user);
-    return new ResponseResults<>()
+    return new ResponseResults()
         .setResult(true);
   }
 
@@ -123,17 +119,17 @@ public class AuthService {
   }
 
   @Transactional(readOnly = true)
-  public ResponseResults<?> checkAuth(HttpServletRequest request, Principal principal) {
+  public ResponseResults checkAuth(HttpServletRequest request, Principal principal) {
     if (principal == null) {
       throw new AuthenticationCredentialsNotFoundException(
           "Session does not exist: " + request.getHeader("Cookie"));
     }
-    return new ResponseLoginDto<>()
+    return new ResponseLoginDto()
         .setUser(userToResponseLoginDto.map(userService.getCurrentUser()))
         .setResult(true);
   }
 
-  public ResponseResults<?> restorePassword(RequestPwdRestoreDto dto, String host) {
+  public ResponseResults restorePassword(RequestPwdRestoreDto dto, String host) {
     User user = userRepository.findByEmail(dto.getEmail())
         .orElseThrow(() -> new AuthenticationCredentialsNotFoundException(
             "There is no such user " + dto.getEmail()));
@@ -151,10 +147,10 @@ public class AuthService {
             )
         )
     );
-    return new ResponsePasswordDto<>().setResult(true);
+    return new ResponseResults().setResult(true);
   }
 
-  public ResponseResults<?> changePassword(RequestPasswordDto dto) {
+  public ResponseResults changePassword(RequestPasswordDto dto) {
     if (!JwtProvider.validateToken(dto.getCode())) {
       throw new InvalidAttributeException(Map.of("code", LINK_EXPIRED_MSG));
     }
@@ -165,7 +161,7 @@ public class AuthService {
       validateCaptcha(dto.getCaptcha(), captchaCodeBySecret);
       user.setPassword(passwordEncoder.encode(dto.getPassword()));
       userRepository.save(user);
-      return new ResponsePasswordDto<>().setResult(true);
+      return new ResponseResults().setResult(true);
     }
     throw new InvalidCaptchaException("captcha argument exception");
   }

@@ -5,15 +5,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.Map;
+
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class ResponseResults<T> {
+public class ResponseResults {
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private T id;
+  private Integer id;
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private T result;
+  private boolean result;
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private T errors;
+  private Map<String, String> errors;
+
 }
