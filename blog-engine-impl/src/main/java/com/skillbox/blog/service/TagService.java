@@ -1,5 +1,6 @@
 package com.skillbox.blog.service;
 
+import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.dto.response.ResponseTagsDto;
 import com.skillbox.blog.dto.response.TagDto;
 import com.skillbox.blog.entity.Tag;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -26,6 +28,9 @@ public class TagService {
 
     if (query.isEmpty()) {
       resultList = tagRepository.findAll();
+        if(resultList.isEmpty()){
+            return new ResponseTagsDto(Collections.emptyList());
+        }
     } else {
       resultList = tagRepository.findAllByNameContaining(query);
     }
