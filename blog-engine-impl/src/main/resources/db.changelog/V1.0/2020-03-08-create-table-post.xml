@@ -29,9 +29,7 @@
 			<column name="view_count" type="INT">
 				<constraints nullable="false"/>
 			</column>
-			<column name="moderator_id" type="INT">
-				<constraints nullable="false"/>
-			</column>
+			<column name="moderator_id" type="INT"/>
 			<column name="user_id" type="INT">
 				<constraints nullable="false"/>
 			</column>
