@@ -1,11 +1,14 @@
 package com.skillbox.blog.entity;
 
+import com.skillbox.blog.entity.enums.GlobalSettingsValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,5 +34,6 @@ public class GlobalSetting {
   private String name;
 
   @Column(nullable = false)
-  private String value;
+  @Enumerated(EnumType.STRING)
+  private GlobalSettingsValue value;
 }

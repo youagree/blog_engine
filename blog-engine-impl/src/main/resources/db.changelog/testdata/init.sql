@@ -45,7 +45,13 @@ DROP SCHEMA IF EXISTS be CASCADE;
 
 CREATE SCHEMA be;
 
-ALTER SCHEMA be OWNER TO postgres;
+CREATE USER be_user WITH password 'be_user';
+
+ALTER USER be_user WITH SUPERUSER;
+
+GRANT USAGE ON SCHEMA be TO be_user;
+
+ALTER SCHEMA be OWNER TO be_user;
 
 SET default_tablespace = '';
 

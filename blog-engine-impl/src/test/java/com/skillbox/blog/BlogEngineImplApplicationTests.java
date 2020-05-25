@@ -3,6 +3,7 @@ package com.skillbox.blog;
 import com.skillbox.blog.config.GlobalSettingsConfig;
 import com.skillbox.blog.config.GlobalSettingsConfig.GlobalSettingConfig;
 import com.skillbox.blog.entity.GlobalSetting;
+import com.skillbox.blog.entity.enums.GlobalSettingsValue;
 import com.skillbox.blog.repository.GlobalSettingRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,10 +34,10 @@ class BlogEngineImplApplicationTests {
 		String ps = "STATISTICS_IS_PUBLIC";
 
 		Map<String, String> settings = config.getGlobalSettings()
-				.stream().collect(Collectors.toMap(GlobalSettingConfig::getCode,
-						GlobalSettingConfig::getValue));
+				.stream().collect(Collectors.toMap(GlobalSettingsConfig.GlobalSettingConfig::getCode,
+						GlobalSettingsConfig.GlobalSettingConfig::getValue));
 
-		Map<String, String> persistedSettings = repository.findAll()
+		Map<String, GlobalSettingsValue> persistedSettings = repository.findAll()
 				.stream().collect(Collectors.toMap(GlobalSetting::getCode, GlobalSetting::getValue));
 
 		Assertions.assertEquals(settings.get(mu), persistedSettings.get(mu));

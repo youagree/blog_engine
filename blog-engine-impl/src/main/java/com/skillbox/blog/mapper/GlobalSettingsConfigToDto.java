@@ -3,6 +3,7 @@ package com.skillbox.blog.mapper;
 import com.skillbox.blog.config.GlobalSettingsConfig;
 import com.skillbox.blog.dto.GlobalSettingsDto;
 import com.skillbox.blog.entity.GlobalSetting;
+import com.skillbox.blog.entity.enums.GlobalSettingsValue;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 
@@ -27,7 +28,7 @@ public interface GlobalSettingsConfigToDto {
             .filter(
                 gs -> gs.getCode().equals(dtoFields[finalI].getName()))
             .findFirst().orElseThrow()
-            .getValue().toLowerCase().equals("yes");
+            .getValue().equals(GlobalSettingsValue.YES);
 
         dtoFields[i].set(
             dto,
@@ -53,7 +54,9 @@ public interface GlobalSettingsConfigToDto {
                 gs -> gs.getCode().equals(dtoFields[finalI].getName())
             )
             .findFirst().orElseThrow()
-            .setValue(((Boolean) dtoFields[i].get(dto) ? "yes" : "no"));
+            .setValue(((Boolean) dtoFields[i].get(dto) ?
+                GlobalSettingsValue.YES :
+                GlobalSettingsValue.NO));
       }
     } catch (IllegalAccessException e) {
       e.printStackTrace();
