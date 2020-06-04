@@ -19,6 +19,15 @@ import com.skillbox.blog.mapper.UserToResponseLoginDto;
 import com.skillbox.blog.repository.CaptchaRepository;
 import com.skillbox.blog.repository.UserRepository;
 import com.skillbox.blog.utils.RandomStringGenerator;
+import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.Map;
+import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.patchca.color.SingleColorFactory;
@@ -30,16 +39,6 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.security.Principal;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -119,7 +118,7 @@ public class AuthService {
   }
 
   @Transactional(readOnly = true)
-  public ResponseResults checkAuth(HttpServletRequest request, Principal principal) {
+  public ResponseLoginDto checkAuth(HttpServletRequest request, Principal principal) {
     if (principal == null) {
       throw new AuthenticationCredentialsNotFoundException(
           "Session does not exist: " + request.getHeader("Cookie"));

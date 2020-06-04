@@ -2,6 +2,8 @@ package com.skillbox.blog.config;
 
 import com.skillbox.blog.mapper.GlobalSettingsConfigToDto;
 import com.skillbox.blog.repository.GlobalSettingRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,9 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 @ConfigurationProperties(prefix = "global-settings")

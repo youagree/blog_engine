@@ -5,13 +5,12 @@ import com.skillbox.blog.dto.response.TagDto;
 import com.skillbox.blog.entity.Tag;
 import com.skillbox.blog.repository.PostRepository;
 import com.skillbox.blog.repository.TagRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -23,6 +22,7 @@ public class TagService {
 
   public ResponseTagsDto getTags(String query) {
     List<Tag> resultList;
+    float maxWeight;
 
     if (query.isEmpty()) {
       resultList = tagRepository.findAll();
@@ -38,11 +38,13 @@ public class TagService {
           return new TagDto(name, weight);
         })
         .collect(Collectors.toList());
-    float maxWeight = (float) responseTags.stream()
-        .mapToDouble(TagDto::getWeight)
-        .max().orElseThrow(NoSuchElementException::new);
-    responseTags
-        .forEach(t -> t.setWeight(t.getWeight()/maxWeight));
+    if (responseTags.size() > 0) {
+      maxWeight = (float) responseTags.stream()
+          .mapToDouble(TagDto::getWeight)
+          .max().orElseThrow(NoSuchElementException::new);
+      responseTags
+          .forEach(t -> t.setWeight(t.getWeight()/maxWeight));
+    }
     return new ResponseTagsDto(responseTags);
   }
 }

@@ -3,6 +3,8 @@ package com.skillbox.blog.service;
 import com.skillbox.blog.entity.User;
 import com.skillbox.blog.entity.enums.Role;
 import com.skillbox.blog.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,9 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @AllArgsConstructor

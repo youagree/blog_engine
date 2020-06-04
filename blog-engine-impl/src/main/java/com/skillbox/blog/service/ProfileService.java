@@ -6,6 +6,11 @@ import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.entity.User;
 import com.skillbox.blog.exception.InvalidAttributeException;
 import com.skillbox.blog.repository.UserRepository;
+import java.io.File;
+import java.lang.instrument.IllegalClassFormatException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,12 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.lang.instrument.IllegalClassFormatException;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -89,7 +88,7 @@ public class ProfileService {
   }
 
   private void checkPhoto(RequestEditProfileDto request, User user, MultipartFile file,
-                          Map<String, String> errors)
+      Map<String, String> errors)
       throws IllegalClassFormatException {
 
     if (request.getRemovePhoto() != null && request.getRemovePhoto() == 1) {

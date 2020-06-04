@@ -4,8 +4,13 @@ import com.skillbox.blog.dto.request.RequestPasswordDto;
 import com.skillbox.blog.dto.request.RequestPwdRestoreDto;
 import com.skillbox.blog.dto.request.RequestUserDto;
 import com.skillbox.blog.dto.response.ResponseCaptchaDto;
+import com.skillbox.blog.dto.response.ResponseLoginDto;
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.service.AuthService;
+import java.io.IOException;
+import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,11 +20,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.io.IOException;
-import java.security.Principal;
 
 @RestController
 @AllArgsConstructor
@@ -42,7 +42,7 @@ public class AuthController {
 
   @GetMapping("/check")
   @ResponseStatus(HttpStatus.OK)
-  public ResponseResults check(HttpServletRequest request, Principal principal) {
+  public ResponseLoginDto check(HttpServletRequest request, Principal principal) {
     return authService.checkAuth(request, principal);
   }
 

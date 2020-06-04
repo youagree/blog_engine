@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.skillbox.blog.config.security.SecurityConstants;
-
 import java.util.Date;
 
 public class JwtProvider {

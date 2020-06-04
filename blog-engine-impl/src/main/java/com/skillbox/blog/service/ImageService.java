@@ -3,16 +3,6 @@ package com.skillbox.blog.service;
 import com.skillbox.blog.config.StorageConfig;
 import com.skillbox.blog.exception.StorageException;
 import com.skillbox.blog.utils.RandomStringGenerator;
-import lombok.AllArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
-import org.imgscalr.Scalr;
-import org.imgscalr.Scalr.Method;
-import org.imgscalr.Scalr.Mode;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +11,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import javax.imageio.ImageIO;
+import lombok.AllArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
+import org.imgscalr.Scalr.Method;
+import org.imgscalr.Scalr.Mode;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional

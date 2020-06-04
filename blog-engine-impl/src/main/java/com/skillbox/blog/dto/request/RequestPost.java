@@ -1,11 +1,10 @@
 package com.skillbox.blog.dto.request;
 
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import javax.validation.constraints.Size;
 
 @Data
 @Builder

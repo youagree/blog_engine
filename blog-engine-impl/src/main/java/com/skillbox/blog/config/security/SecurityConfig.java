@@ -7,6 +7,9 @@ import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.entity.User;
 import com.skillbox.blog.mapper.UserToResponseLoginDto;
 import com.skillbox.blog.service.UserService;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
@@ -22,10 +25,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @EnableWebSecurity
 @AllArgsConstructor
@@ -91,6 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException {
     response.setStatus(HttpStatus.OK.value());
+    setContentTypeJson(response);
     objectMapper.writeValue(
         response.getWriter(),
         new ResponseLoginDto()
@@ -106,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
       throws IOException {
     response.setStatus(HttpStatus.OK.value());
+    setContentTypeJson(response);
     objectMapper.writeValue(
         response.getWriter(),
         new ResponseLoginDto()
@@ -115,11 +116,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private void logoutSuccessHandler(
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException {
-
     response.setStatus(HttpStatus.OK.value());
+    setContentTypeJson(response);
     objectMapper.writeValue(
         response.getWriter(),
         new ResponseResults()
             .setResult(true));
+  }
+
+  private void setContentTypeJson(HttpServletResponse response) {
+    response.setHeader("Content-Type", "application/json;charset=UTF-8");
   }
 }

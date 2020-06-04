@@ -4,11 +4,10 @@ import com.skillbox.blog.config.GlobalSettingsConfig;
 import com.skillbox.blog.dto.GlobalSettingsDto;
 import com.skillbox.blog.entity.GlobalSetting;
 import com.skillbox.blog.entity.enums.GlobalSettingsValue;
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.Mapper;
-
 import java.lang.reflect.Field;
 import java.util.List;
+import org.mapstruct.InheritInverseConfiguration;
+import org.mapstruct.Mapper;
 
 @Mapper
 public interface GlobalSettingsConfigToDto {

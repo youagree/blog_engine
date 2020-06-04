@@ -23,14 +23,6 @@ import com.skillbox.blog.repository.PostRepository;
 import com.skillbox.blog.repository.PostVoteRepository;
 import com.skillbox.blog.repository.TagRepository;
 import com.skillbox.blog.repository.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,6 +32,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -57,15 +58,17 @@ public class PostService {
 
   @Transactional(readOnly = true)
   public ResponseAllPostsDto getPosts(int offset, int limit, String mode) {
-    int count = postRepository.findCountOfSuitablePosts();
+    long count;
     Sort sortMode = Sort.valueOf(mode.toUpperCase());
     Pageable pageable = PageRequest.of(offset / limit, limit);
-    List<Post> posts;
+    Page<Post> posts;
 
     if (sortMode == Sort.POPULAR) {
       posts = postRepository.findPostsByPopular(pageable);
+      count = posts.getTotalElements();
     } else if (sortMode == Sort.BEST) {
       posts = postRepository.findPostsByBest(pageable);
+      count = posts.getTotalElements();
     } else {
       Direction direction = Direction.valueOf("DESC");
       if (sortMode == Sort.EARLY) {
@@ -73,11 +76,12 @@ public class PostService {
       }
       pageable = PageRequest.of(offset / limit, limit, direction, "time");
       posts = postRepository.findSuitablePosts(pageable);
+      count = posts.getTotalElements();
     }
 
     return ResponseAllPostsDto.builder()
         .count(count)
-        .posts(postConversion(posts))
+        .posts(postConversion(posts.getContent()))
         .build();
   }
 
@@ -177,7 +181,6 @@ public class PostService {
   @Transactional(readOnly = true)
   public ResponseAllPostsDto getModerationList(int offset, int limit, String status) {
     Pageable pageable = PageRequest.of(offset / limit, limit);
-    int moderatorId = userService.getCurrentUser().getId();
     int count = postRepository
         .findCountPostsForModerationByStatus(status.toUpperCase());
 
@@ -188,7 +191,7 @@ public class PostService {
 
     for (Post post : postsForModeration) {
       int userId = post.getUserId().getId();
-      String userName = userRepository.findNameById(userId);
+      String userName = post.getUserId().getName();
       String announce;
 
       if (post.getText().contains(".")) {
@@ -264,7 +267,7 @@ public class PostService {
     postToSave.setModeratorId(isMultiuserMode ? null : userService.getCurrentUser());
     postToSave.setTagList(updateTags(post.getTags()));
 
-    if (globalSettingRepository.findPostPremoderationValue().equals("NO") || isModerator) {
+    if (globalSettingRepository.findPostPremoderationValue().equals(GlobalSettingsValue.NO.name()) || isModerator) {
       postToSave.setModerationStatus(ModerationStatus.ACCEPTED);
     }
 
@@ -272,6 +275,7 @@ public class PostService {
     return new ResponseResults().setResult(true);
   }
 
+  @Transactional(isolation = Isolation.REPEATABLE_READ)
   public ResponseResults editPost(RequestPost editPost, int postId) {
     Post oldPost = getPostById(postId);
     Post postToSave = requestMapper.mapEdit(editPost);

@@ -2,6 +2,12 @@ package com.skillbox.blog.exception;
 
 import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.dto.response.errors.ErrorResponse;
+import java.lang.instrument.IllegalClassFormatException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.FileAlreadyExistsException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,13 +19,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-
-import javax.persistence.EntityNotFoundException;
-import java.lang.instrument.IllegalClassFormatException;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.FileAlreadyExistsException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -111,13 +110,10 @@ public class GlobalExceptionHandler {
         .build();
   }
 
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler(AccessDeniedException.class)
-  public ErrorResponse handleStatisticsAccessDeniedException(AccessDeniedException ex) {
+  public void handleStatisticsAccessDeniedException(AccessDeniedException ex) {
     log.error("Access denied: {}", ex.getMessage());
-    return ErrorResponse.builder()
-        .message("Statistics hidden by moderator!")
-        .build();
   }
 
   @ResponseStatus(HttpStatus.OK)
@@ -129,7 +125,7 @@ public class GlobalExceptionHandler {
         .setResult(false);
   }
 
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(InvalidAttributeException.class)
   public ResponseResults handleInvalidAttributeException(InvalidAttributeException ex) {
     log.error("{}: {}", ex.getMessage(), ex.getErrors());

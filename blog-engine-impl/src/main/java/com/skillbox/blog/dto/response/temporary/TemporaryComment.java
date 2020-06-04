@@ -1,9 +1,8 @@
 package com.skillbox.blog.dto.response.temporary;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

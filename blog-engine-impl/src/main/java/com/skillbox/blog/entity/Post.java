@@ -1,11 +1,8 @@
 package com.skillbox.blog.entity;
 
 import com.skillbox.blog.entity.enums.ModerationStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,11 +17,16 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Data
 @Entity
+@DynamicUpdate
 @Builder
 @Table(name = "post")
 @AllArgsConstructor
@@ -39,6 +41,7 @@ public class Post {
   private byte isActive;
 
   @Column(nullable = false)
+  @ColumnTransformer(read = "UPPER(moderation_status)")
   @Enumerated(EnumType.STRING)
   private ModerationStatus moderationStatus;
 

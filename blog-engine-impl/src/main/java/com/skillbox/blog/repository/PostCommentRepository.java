@@ -3,13 +3,12 @@ package com.skillbox.blog.repository;
 import com.skillbox.blog.dto.response.temporary.TemporaryComment;
 import com.skillbox.blog.entity.Post;
 import com.skillbox.blog.entity.PostComment;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface PostCommentRepository extends JpaRepository<PostComment, Integer> {

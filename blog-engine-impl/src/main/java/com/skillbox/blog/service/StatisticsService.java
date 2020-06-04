@@ -1,16 +1,16 @@
 package com.skillbox.blog.service;
 
 import com.skillbox.blog.dto.response.ResponseStatisticsDto;
-import com.skillbox.blog.entity.GlobalSetting;
+import com.skillbox.blog.entity.enums.GlobalSettingsValue;
 import com.skillbox.blog.repository.GlobalSettingRepository;
 import com.skillbox.blog.repository.PostRepository;
 import com.skillbox.blog.repository.PostVoteRepository;
+import java.nio.file.AccessDeniedException;
+import java.security.Principal;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.nio.file.AccessDeniedException;
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,11 +35,11 @@ public class StatisticsService {
         .build();
   }
 
-  public ResponseStatisticsDto getStatisticForAll() {
-    List<GlobalSetting> settings = repository.findAll();
+  @SneakyThrows
+  public ResponseStatisticsDto getStatisticForAll(Principal principal) {
     if (
-        settings.stream()
-            .anyMatch(s -> s.getCode().equals("STATISTICS_IS_PUBLIC") && s.getValue().equals("YES"))
+        repository.findStatisticsIsPublic().equals(GlobalSettingsValue.YES.name())
+            || principal != null
     ) {
       return ResponseStatisticsDto.builder()
           .postsCount(postRepository.findCountAllPosts())
@@ -49,12 +49,7 @@ public class StatisticsService {
           .firstPublication(postService.dateMapping(postRepository.findFirstPublication()))
           .build();
     } else {
-      try {
-        throw new AccessDeniedException("Statistics hidden by moderator!");
-      } catch (AccessDeniedException e) {
-        e.printStackTrace();
-      }
+      throw new AccessDeniedException("Statistics hidden by moderator!");
     }
-    return null;
   }
 }

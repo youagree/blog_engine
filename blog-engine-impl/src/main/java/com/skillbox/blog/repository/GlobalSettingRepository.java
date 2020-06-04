@@ -13,4 +13,8 @@ public interface GlobalSettingRepository extends JpaRepository<GlobalSetting, In
   @Query(nativeQuery = true, value = "SELECT value FROM global_setting WHERE "
       + "code = 'MULTIUSER_MODE'")
   String findMultiuserModeValue();
+
+  @Query(nativeQuery = true, value = "SELECT value FROM global_setting WHERE "
+      + "code = 'STATISTICS_IS_PUBLIC'")
+  String findStatisticsIsPublic();
 }

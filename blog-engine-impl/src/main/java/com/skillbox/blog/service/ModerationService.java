@@ -5,11 +5,10 @@ import com.skillbox.blog.dto.response.ResponseResults;
 import com.skillbox.blog.entity.Post;
 import com.skillbox.blog.entity.enums.ModerationStatus;
 import com.skillbox.blog.repository.PostRepository;
+import javax.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityNotFoundException;
 
 @Service
 @Transactional

@@ -1,14 +1,13 @@
 package com.skillbox.blog.config;
 
 import com.skillbox.blog.service.ImageService;
+import java.util.Map;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.Map;
 
 @Configuration
 public class StorageConfig implements WebMvcConfigurer, CommandLineRunner {

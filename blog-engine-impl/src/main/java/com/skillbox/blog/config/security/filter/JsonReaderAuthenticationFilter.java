@@ -2,6 +2,10 @@ package com.skillbox.blog.config.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillbox.blog.dto.request.RequestLoginDto;
+import java.io.BufferedReader;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -9,11 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
 
 @Slf4j
 @AllArgsConstructor
